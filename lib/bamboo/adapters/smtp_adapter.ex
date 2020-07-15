@@ -231,8 +231,17 @@ defmodule Bamboo.SMTPAdapter do
     body
     |> add_smtp_line("Content-Type: #{attachment.content_type}; name=\"#{attachment.filename}\"")
     |> add_smtp_line("Content-Disposition: attachment; filename=\"#{attachment.filename}\"")
+    |> add_attachment_content_id(attachment)
     |> add_smtp_line("Content-Transfer-Encoding: base64")
     |> add_smtp_line("X-Attachment-Id: #{random}")
+  end
+
+  defp add_attachment_content_id(body, %{content_id: nil} = _attachment) do
+    body
+  end
+  defp add_attachment_content_id(body, attachment) do
+    body
+    |> add_smtp_line("Content-ID: <#{attachment.content_id}>")
   end
 
   defp add_attachment_body(body, data) do
